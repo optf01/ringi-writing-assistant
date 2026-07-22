@@ -37,6 +37,35 @@ CUSTOM_CSS = """
     color: var(--ink) !important;
 }
 
+[data-testid="stSelectbox"] [data-baseweb="select"] {
+    background-color: rgba(9, 13, 26, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 8px !important;
+}
+
+[data-testid="stSelectbox"] [data-baseweb="select"] * {
+    background-color: transparent !important;
+    color: var(--ink) !important;
+}
+
+[data-testid="stSelectbox"] svg {
+    fill: var(--ink-dim) !important;
+}
+
+div[data-baseweb="popover"] [data-baseweb="menu"] {
+    background-color: #101a30 !important;
+    border: 1px solid rgba(212, 175, 106, 0.25) !important;
+}
+
+div[data-baseweb="popover"] [data-baseweb="menu"] * {
+    background-color: transparent !important;
+    color: var(--ink) !important;
+}
+
+div[data-baseweb="popover"] li:hover {
+    background-color: rgba(212, 175, 106, 0.15) !important;
+}
+
 .block-container {
     max-width: 760px;
     padding-top: 2.6rem;
@@ -147,6 +176,33 @@ CUSTOM_CSS = """
 [data-testid="stFileUploaderDropzone"] {
     background: rgba(9, 13, 26, 0.6) !important;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+[data-testid="stFileUploaderDropzone"] span,
+[data-testid="stFileUploaderDropzone"] small,
+[data-testid="stFileUploaderDropzone"] div {
+    color: var(--ink-dim) !important;
+}
+
+[data-testid="stFileUploaderDropzone"] svg {
+    fill: var(--ink-dim) !important;
+}
+
+[data-testid="stFileUploaderDropzone"] button,
+[data-testid="stBaseButton-secondary"] {
+    background: rgba(212, 175, 106, 0.12) !important;
+    color: var(--accent) !important;
+    border: 1px solid rgba(212, 175, 106, 0.4) !important;
+    border-radius: 8px !important;
+}
+
+[data-testid="stFileUploaderDropzone"] button:hover,
+[data-testid="stBaseButton-secondary"]:hover {
+    background: rgba(212, 175, 106, 0.22) !important;
+}
+
+[data-testid="stFileUploaderFile"] {
+    color: var(--ink) !important;
 }
 
 [data-testid="stForm"] {
