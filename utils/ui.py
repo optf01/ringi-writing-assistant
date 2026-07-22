@@ -1,3 +1,5 @@
+import os
+
 import streamlit as st
 
 from utils.gemini_client import generate_stream, has_api_key
@@ -9,11 +11,23 @@ MODELS = {
 
 
 def render_sidebar() -> str:
-    """サイドバーにモデル選択UIを表示し、選択中のモデルIDを返す。"""
+    """サイドバーにAPIキー入力・モデル選択UIを表示し、選択中のモデルIDを返す。"""
     st.sidebar.title("⚙️ 設定")
 
+    if "gemini_api_key_override" not in st.session_state:
+        st.session_state.gemini_api_key_override = ""
+
+    st.session_state.gemini_api_key_override = st.sidebar.text_input(
+        "Gemini APIキー",
+        value=st.session_state.gemini_api_key_override,
+        type="password",
+        placeholder=".envの値を使用中" if os.getenv("GEMINI_API_KEY") else "APIキーを入力してください",
+        help="ここで入力したキーはこのブラウザセッション内でのみ使用され、保存されません。"
+             "空欄の場合は .env の GEMINI_API_KEY を使用します。",
+    )
+
     if not has_api_key():
-        st.sidebar.error("GEMINI_API_KEY が未設定です。.env を確認してください。")
+        st.sidebar.error("Gemini APIキーが未設定です。上の欄に入力するか、.env に GEMINI_API_KEY を設定してください。")
 
     if "model_label" not in st.session_state:
         st.session_state.model_label = list(MODELS.keys())[0]
@@ -32,8 +46,8 @@ def render_sidebar() -> str:
 def run_generation(prompt: str, model: str, system_instruction: str, temperature: float = 0.7):
     """生成を実行し、ストリーミング表示した上で結果テキストを返す。APIキー未設定時はNoneを返す。"""
     if not has_api_key():
-        st.error("GEMINI_API_KEY が設定されていません。プロジェクト直下に .env を作成し、"
-                  "GEMINI_API_KEY=あなたのAPIキー を記載してください。")
+        st.error("Gemini APIキーが設定されていません。サイドバーの入力欄にAPIキーを入力するか、"
+                  "プロジェクト直下の .env に GEMINI_API_KEY を設定してください。")
         return None
 
     try:

@@ -19,16 +19,26 @@ class RingiExtraction(BaseModel):
     schedule: str
 
 
-@st.cache_resource
-def _get_client() -> genai.Client:
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        raise RuntimeError("GEMINI_API_KEY が設定されていません。")
+@st.cache_resource(show_spinner=False)
+def _get_client(api_key: str) -> genai.Client:
     return genai.Client(api_key=api_key)
 
 
+def resolve_api_key() -> Optional[str]:
+    """サイドバーでユーザーが入力したAPIキー（セッション限定）があればそれを優先し、なければ.envの値を使う。"""
+    session_key = st.session_state.get("gemini_api_key_override", "").strip()
+    return session_key or os.getenv("GEMINI_API_KEY")
+
+
 def has_api_key() -> bool:
-    return bool(os.getenv("GEMINI_API_KEY"))
+    return bool(resolve_api_key())
+
+
+def _client() -> genai.Client:
+    api_key = resolve_api_key()
+    if not api_key:
+        raise RuntimeError("GEMINI_API_KEY が設定されていません。")
+    return _get_client(api_key)
 
 
 def generate_stream(
@@ -38,7 +48,7 @@ def generate_stream(
     temperature: float = 0.7,
 ) -> Iterator[str]:
     """Gemini APIにストリーミングでリクエストし、テキストチャンクを順次yieldする。"""
-    client = _get_client()
+    client = _client()
     config = types.GenerateContentConfig(
         system_instruction=system_instruction,
         temperature=temperature,
@@ -55,7 +65,7 @@ def generate_stream(
 
 def extract_from_quote_pdf(pdf_bytes: bytes, model: str) -> RingiExtraction:
     """見積書PDFの内容をGeminiの文書読解機能で読み取り、稟議書フォームの各項目を抽出する。"""
-    client = _get_client()
+    client = _client()
     prompt = (
         "添付した見積書（PDF）の内容を読み取り、稟議書作成フォームに入力する項目を日本語で抽出してください。\n"
         "- subject: 稟議の件名（例:「〇〇の購入について」）\n"
